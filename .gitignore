@@ -1,5 +1,8 @@
 # Firecrawl CLI scrape cache
 .firecrawl/
 
+# Playwright MCP session output (snapshots, console logs)
+.playwright-mcp/
+
 # Local environment / secrets
 .env
