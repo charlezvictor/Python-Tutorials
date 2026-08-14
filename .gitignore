@@ -1,0 +1,5 @@
+# Firecrawl CLI scrape cache
+.firecrawl/
+
+# Local environment / secrets
+.env
