@@ -179,7 +179,7 @@ project scope, so they travel with the repo.
   `investment-banking`, `private-equity`, `wealth-management`, `fund-admin`,
   and more.
 
-### These declare 33 third-party MCP endpoints
+### These declare 32 third-party MCP endpoints
 
 Between them the plugins declare MCP servers for CourtListener, Slack, Google
 Drive, Solve Intelligence, Descrybe, FactSet, Moody's, PitchBook, S&P Global,
@@ -190,6 +190,14 @@ still needs its own authentication before it will do anything. Review
 ```bash
 claude plugin disable <plugin>@<marketplace>
 ```
+
+### Known upstream bug
+
+`financial-analysis`'s `.mcp.json` is invalid JSON at commit `69cbc81` — a
+missing comma after the `egnyte` entry and an unclosed `box` object. Its MCP
+servers will not parse. The plugin's skills and its 7 slash commands are
+unaffected. This is a bug in `anthropics/financial-services`, not in this
+install; it needs a fix upstream.
 
 Most legal plugins expect a one-time setup pass before use:
 
