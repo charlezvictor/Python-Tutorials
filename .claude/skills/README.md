@@ -1,6 +1,7 @@
 # Installed Agent Skills
 
-**907 skills installed** across four sources. See each section below.
+**931 skills installed** across six sources, plus **31 plugins** from two
+marketplaces (see `.claude/settings.json`). See each section below.
 
 Claude Code loads every skill in this directory automatically. Each skill lives in
 its own folder containing a `SKILL.md` (plus supporting files where applicable).
@@ -110,15 +111,88 @@ frontmatter `name:` field were normalized (`cloudinary-automation`,
 `zoho-books-automation`). Only the name line was rewritten; skill bodies are
 untouched.
 
-### Five of these shadow built-in Claude Code skills
+### 12 of these were replaced by their upstream originals
 
-`docx`, `pdf`, `pptx`, `xlsx` (from upstream `document-skills/`) and
-`skill-creator` have the same names as skills that ship with Claude Code.
-A project skill wins over a built-in of the same name, so these snapshots now
-take precedence over the maintained versions.
+This repo vendors copies of Anthropic's own skills. Where they overlapped with
+`anthropics/skills` (see below), the authoritative upstream version won.
 
-To restore the built-ins, delete the copies:
+## anthropics/skills — 19 skills
+
+From [anthropics/skills](https://github.com/anthropics/skills) (commit
+`3b3fad9`, 2026-08-21). No LICENSE file upstream; see its
+`THIRD_PARTY_NOTICES.md`.
+
+Anthropic's own skill library: `docx`, `pdf`, `pptx`, `xlsx`, `skill-creator`,
+`canvas-design`, `brand-guidelines`, `mcp-builder`, `theme-factory`,
+`webapp-testing`, `internal-comms`, `slack-gif-creator`, plus `academy-guide`,
+`algorithmic-art`, `claude-api`, `discernment-nudge`, `doc-coauthoring`,
+`frontend-design`, and `web-artifacts-builder`.
+
+**This is the authoritative source for 12 skills that awesome-claude-skills
+also vendors.** Those copies had drifted (7 differed materially — `skill-creator`
+upstream is 33KB against the fork's 11KB), so the upstream versions replaced
+them on install.
+
+### Six skills shadow built-in Claude Code skills
+
+`docx`, `pdf`, `pptx`, `xlsx`, `skill-creator`, and `claude-api` share names
+with skills that ship with Claude Code. A project skill wins, so these now take
+precedence. They are the genuine Anthropic versions, just pinned to commit
+`3b3fad9` rather than tracking the bundled build. To fall back to the built-ins:
 
 ```bash
-rm -rf .claude/skills/{docx,pdf,pptx,xlsx,skill-creator}
+rm -rf .claude/skills/{docx,pdf,pptx,xlsx,skill-creator,claude-api}
+```
+
+## charlie947/social-media-skills — 17 skills
+
+From [charlie947/social-media-skills](https://github.com/charlie947/social-media-skills)
+(commit `69d9488`, 2026-08-12). See `LICENSE-social-media-skills`.
+
+LinkedIn and short-form content skills: `voice-builder`, `post-writer`,
+`post-scorer`, `content-matrix`, `hook-generator`, `profile-optimizer`,
+`analytics-dashboard`, `reels-scripting`, `youtube-thumbnail`, and more.
+
+Several need external credentials or tooling: `reels-scripting` wants
+`APIFY_API_TOKEN` and `GOOGLE_AI_API_KEY`, `post-scorer` uses Apify, and
+`niche-research` needs the Claude for Chrome extension.
+
+## Plugin marketplaces — 31 plugins
+
+`anthropics/claude-for-legal` and `anthropics/financial-services` are **plugin
+marketplaces**, not flat skill libraries. Each plugin bundles skills together
+with agents, slash commands, hooks, and an `.mcp.json`. They are installed as
+plugins rather than copied into this directory, which keeps 20 agents and 56
+slash commands working and avoids a name collision that a flat copy would hit:
+`claude-for-legal` ships 12 genuinely different, plugin-scoped `customize`
+skills (and 5 other repeated names) that would collapse into one.
+
+Both marketplaces and all 31 plugins are declared in `.claude/settings.json` at
+project scope, so they travel with the repo.
+
+- **claude-for-legal** (commit `4a6c651`) — 12 plugins: `commercial-legal`,
+  `corporate-legal`, `privacy-legal`, `ip-legal`, `litigation-legal`,
+  `employment-legal`, `regulatory-legal`, `product-legal`,
+  `ai-governance-legal`, `law-student`, `legal-clinic`, `legal-builder-hub`.
+- **financial-services** (commit `69cbc81`) — 19 plugins: `model-builder`,
+  `pitch-agent`, `earnings-reviewer`, `kyc-screener`, `equity-research`,
+  `investment-banking`, `private-equity`, `wealth-management`, `fund-admin`,
+  and more.
+
+### These declare 33 third-party MCP endpoints
+
+Between them the plugins declare MCP servers for CourtListener, Slack, Google
+Drive, Solve Intelligence, Descrybe, FactSet, Moody's, PitchBook, S&P Global,
+Morningstar, LSEG, Daloopa, and others. Declaring is not connecting — each
+still needs its own authentication before it will do anything. Review
+`.claude/settings.json` and disable any plugin you do not want:
+
+```bash
+claude plugin disable <plugin>@<marketplace>
+```
+
+Most legal plugins expect a one-time setup pass before use:
+
+```
+/<plugin>:cold-start-interview
 ```
