@@ -162,7 +162,7 @@ Several need external credentials or tooling: `reels-scripting` wants
 `anthropics/claude-for-legal` and `anthropics/financial-services` are **plugin
 marketplaces**, not flat skill libraries. Each plugin bundles skills together
 with agents, slash commands, hooks, and an `.mcp.json`. They are installed as
-plugins rather than copied into this directory, which keeps 20 agents and 56
+plugins rather than copied into this directory, which keeps 20 agents and 47
 slash commands working and avoids a name collision that a flat copy would hit:
 `claude-for-legal` ships 12 genuinely different, plugin-scoped `customize`
 skills (and 5 other repeated names) that would collapse into one.
