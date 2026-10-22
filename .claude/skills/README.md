@@ -1,6 +1,6 @@
 # Installed Agent Skills
 
-**932 skills installed** across seven sources, plus **31 plugins** from two
+**933 skills installed** across eight sources, plus **31 plugins** from two
 marketplaces (see `.claude/settings.json`). See each section below.
 
 Claude Code loads every skill in this directory automatically. Each skill lives in
@@ -252,3 +252,47 @@ committed when you use the skill.
 
 Upstream `evals/` and the repo's CI workflows and issue templates were omitted;
 the README's images were kept so it renders locally.
+
+## Jakeschincariol/arena-skill — 1 skill
+
+From [Jakeschincariol/arena-skill](https://github.com/Jakeschincariol/arena-skill)
+(commit `df07b8e`, 2026-09-26). MIT — see `arena/LICENSE`.
+
+`arena` runs a tournament when an answer is not good enough: N sub-agents get
+the identical task, each with a different strategy card, then attack, defend and
+revise each other's solutions through a single-elimination bracket until one
+survives. Claude orchestrates and never competes or judges.
+
+Installed as a folder copy rather than a plugin, which is what upstream
+documents for project-local use and what gives plain `/arena`. Installed as a
+plugin it would instead be `/arena-skill:arena`.
+
+- **Prerequisites**: Python 3.8+ (3.11 here) and Claude Code, since it spawns
+  sub-agents with the Agent tool. Nothing to `pip install` — `bracket.py` is
+  standard library only.
+- **Verified**: `init --quick --seed 7` deals cards, writes state and reports
+  the next step correctly on Python 3.11.
+
+### It is expensive — check `plan` before you run it
+
+`bracket.py` does the bookkeeping; the cost is in the sub-agents it tells
+Claude to launch. Five calls per match, and:
+
+| Mode | Agents | Sub-agent calls |
+| --- | --- | --- |
+| `--quick` | 16 | 91 |
+| default | 100 | 495 |
+
+`python3 .claude/skills/arena/bracket.py plan` prints the full table for any N
+without starting a run. Prefer `--quick` unless the task genuinely warrants
+495 calls.
+
+### Run state
+
+`bracket.py` writes `.arena/` into the **current working directory**, not into
+the skill folder. The repository root `.gitignore` carries a `.arena/` rule so
+those runs stay out of git. If you invoke `/arena` from a subdirectory, that
+directory gets its own `.arena/`.
+
+Upstream `tests/` and `.claude-plugin/` manifests were omitted; neither is used
+by a folder install.
